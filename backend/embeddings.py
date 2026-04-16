@@ -8,7 +8,7 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 def embed_text(text: str) -> list[float]:
     """Generate embedding using Google Gemini explicitly truncated to 384 dimensions to match DB schemas natively."""
     result = client.models.embed_content(
-        model="text-embedding-004",
+        model="gemini-embedding-2-preview",
         contents=text,
         config=types.EmbedContentConfig(output_dimensionality=384)
     )
