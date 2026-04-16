@@ -1,7 +1,14 @@
 import axios from 'axios'
 
 const rawUrl = import.meta.env.VITE_API_URL;
-const resolvedUrl = rawUrl ? (rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`) : '/api';
+let resolvedUrl = 'https://atlas-backend-5kkt.onrender.com/api';
+
+if (rawUrl) {
+  resolvedUrl = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`;
+  if (!resolvedUrl.endsWith('/api')) {
+    resolvedUrl += '/api';
+  }
+}
 
 const api = axios.create({ 
   baseURL: resolvedUrl
