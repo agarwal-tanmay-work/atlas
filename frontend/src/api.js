@@ -5,6 +5,10 @@ let resolvedUrl = 'https://atlas-backend-5kkt.onrender.com/api';
 
 if (rawUrl) {
   resolvedUrl = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`;
+  // If the URL is just a internal Render hostname (no dots), append the TLD
+  if (!resolvedUrl.includes('.')) {
+    resolvedUrl += '.onrender.com';
+  }
   if (!resolvedUrl.endsWith('/api')) {
     resolvedUrl += '/api';
   }
