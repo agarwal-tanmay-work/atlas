@@ -1,7 +1,10 @@
 import axios from 'axios'
 
+const rawUrl = import.meta.env.VITE_API_URL;
+const resolvedUrl = rawUrl ? (rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`) : '/api';
+
 const api = axios.create({ 
-  baseURL: import.meta.env.VITE_API_URL || '/api' 
+  baseURL: resolvedUrl
 })
 
 export const searchFailures = (q, domain, rootCause, limit) => 
