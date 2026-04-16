@@ -1,31 +1,20 @@
-from sentence_transformers import SentenceTransformer
-from config import EMBED_MODEL
+from google import genai
+from google.genai import types
+from models.schemas import FailureRecord
+from config import GEMINI_API_KEY
 
-_model = None
-
-
-def get_model():
-    global _model
-    if _model is None:
-        _model = SentenceTransformer(EMBED_MODEL)
-    return _model
-
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 def embed_text(text: str) -> list[float]:
-    model = get_model()
-    return model.encode(text, normalize_embeddings=True).tolist()
+    """Generate embedding using Google Gemini explicitly truncated to 384 dimensions to match DB schemas natively."""
+    result = client.models.embed_content(
+        model="text-embedding-004",
+        contents=text,
+        config=types.EmbedContentConfig(output_dimensionality=384)
+    )
+    return result.embeddings[0].values
 
-
-def embed_failure(record) -> list[float]:
-    """Create a rich text representation for embedding a FailureRecord."""
-    text = f"""
-    Title: {record.title}
-    Domain: {record.domain}
-    What failed: {record.what_failed}
-    Root cause: {record.root_cause}
-    Root cause category: {record.root_cause_category}
-    Lesson: {record.lesson}
-    Tags: {', '.join(record.tags)}
-    Warning signs: {', '.join(record.warning_signs)}
-    """
-    return embed_text(text.strip())
+def embed_failure(failure: FailureRecord) -> list[float]:
+    """Generate a semantic combination layout of the failure."""
+    content = f"Title: {failure.title}\nDomain: {failure.domain}\nWhat Failed: {failure.what_failed}\nRoot Cause: {failure.root_cause_category}\nLesson: {failure.lesson}"
+    return embed_text(content)
